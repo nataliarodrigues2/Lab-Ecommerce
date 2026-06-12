@@ -1,6 +1,7 @@
 const { Conexao } = require("./src/conexao");
 const { PagamentoFactory } = require("./src/pagamento");
 const { PedidoBuilder } = require("./src/pedido");
+const { GatewayAdapter } = require("./src/gatewayAdapter");
 
 async function main() {
   console.log("╔══════════════════════════════════════╗");
@@ -78,6 +79,13 @@ async function main() {
   } catch (e) {
     console.log(e.message);
   }
+
+  // ── ADAPTER ─────────────────────────────────────────────────────────────────
+  console.log("\n━━━ TAREFA 04: ADAPTER ━━━");
+
+  // O Pedido só conhece o contrato Pagamento; não sabe que por trás há um legado.
+  const pagamentoLegado = new GatewayAdapter();
+  console.log(pagamentoLegado.processar(299.90));
 
   await db.fechar();
 }
