@@ -4,6 +4,7 @@ const { PedidoBuilder } = require("./src/pedido");
 const { GatewayAdapter } = require("./src/gatewayAdapter");
 const { LogDecorator, DescontoDecorator } = require("./src/decoratorPagamento");
 const { CheckoutFacade } = require("./src/checkoutFacade");
+const { Carrinho, FreteCorreios, FreteJadlog, FreteRetirada } = require("./src/frete");
 
 async function main() {
   console.log("╔══════════════════════════════════════╗");
@@ -105,6 +106,20 @@ async function main() {
   // O cliente chama apenas finalizar() — não conhece os subsistemas internos.
   const checkout = new CheckoutFacade();
   checkout.finalizar(pedido);
+
+  // ── STRATEGY ────────────────────────────────────────────────────────────────
+  console.log("\n━━━ TAREFA 07: STRATEGY ━━━");
+
+  const peso = 2.5; // kg
+  const carrinho = new Carrinho(new FreteCorreios());
+  console.log(`Correios:  R$ ${carrinho.calcularFrete(peso).toFixed(2)}`);
+
+  // Troca de estratégia em tempo de execução — o Carrinho não muda.
+  carrinho.setFrete(new FreteJadlog());
+  console.log(`Jadlog:    R$ ${carrinho.calcularFrete(peso).toFixed(2)}`);
+
+  carrinho.setFrete(new FreteRetirada());
+  console.log(`Retirada:  R$ ${carrinho.calcularFrete(peso).toFixed(2)}`);
 
   await db.fechar();
 }
