@@ -6,6 +6,11 @@ const { LogDecorator, DescontoDecorator } = require("./src/decoratorPagamento");
 const { CheckoutFacade } = require("./src/checkoutFacade");
 const { Carrinho, FreteCorreios, FreteJadlog, FreteRetirada } = require("./src/frete");
 const { EmailObserver, EstoqueObserver, LogObserver } = require("./src/observers");
+const {
+  CancelarPedidoComando,
+  AtualizarEnderecoComando,
+  GerenciadorComandos,
+} = require("./src/comandos");
 
 async function main() {
   console.log("╔══════════════════════════════════════╗");
@@ -133,6 +138,25 @@ async function main() {
 
   console.log(`Mudando status do pedido ${pedido.id} para CONFIRMADO...`);
   pedido.setStatus("CONFIRMADO");
+
+  // ── COMMAND ─────────────────────────────────────────────────────────────────
+  console.log("\n━━━ TAREFA 09: COMMAND ━━━");
+
+  const gerenciador = new GerenciadorComandos();
+
+  gerenciador.executar(new CancelarPedidoComando(pedido));
+  gerenciador.executar(
+    new AtualizarEnderecoComando(pedido, {
+      rua: "Rua Nova",
+      numero: "999",
+      cidade: "Joinville",
+      cep: "89202-000",
+    })
+  );
+
+  console.log("\nDesfazendo as duas últimas ações...");
+  gerenciador.desfazerUltimo(); // desfaz atualização de endereço
+  gerenciador.desfazerUltimo(); // desfaz cancelamento
 
   await db.fechar();
 }
