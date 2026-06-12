@@ -2,6 +2,7 @@ const { Conexao } = require("./src/conexao");
 const { PagamentoFactory } = require("./src/pagamento");
 const { PedidoBuilder } = require("./src/pedido");
 const { GatewayAdapter } = require("./src/gatewayAdapter");
+const { LogDecorator, DescontoDecorator } = require("./src/decoratorPagamento");
 
 async function main() {
   console.log("╔══════════════════════════════════════╗");
@@ -86,6 +87,16 @@ async function main() {
   // O Pedido só conhece o contrato Pagamento; não sabe que por trás há um legado.
   const pagamentoLegado = new GatewayAdapter();
   console.log(pagamentoLegado.processar(299.90));
+
+  // ── DECORATOR ───────────────────────────────────────────────────────────────
+  console.log("\n━━━ TAREFA 05: DECORATOR ━━━");
+
+  // Empilha comportamentos: log em cima de desconto em cima de PIX.
+  const pixDecorado = new LogDecorator(
+    new DescontoDecorator(PagamentoFactory.criar("pix"), 10)
+  );
+  console.log("Descrição:", pixDecorado.getDescricao());
+  console.log(pixDecorado.processar(299.90));
 
   await db.fechar();
 }
