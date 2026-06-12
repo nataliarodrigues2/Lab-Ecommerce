@@ -3,6 +3,7 @@ const { PagamentoFactory } = require("./src/pagamento");
 const { PedidoBuilder } = require("./src/pedido");
 const { GatewayAdapter } = require("./src/gatewayAdapter");
 const { LogDecorator, DescontoDecorator } = require("./src/decoratorPagamento");
+const { CheckoutFacade } = require("./src/checkoutFacade");
 
 async function main() {
   console.log("╔══════════════════════════════════════╗");
@@ -97,6 +98,13 @@ async function main() {
   );
   console.log("Descrição:", pixDecorado.getDescricao());
   console.log(pixDecorado.processar(299.90));
+
+  // ── FACADE ──────────────────────────────────────────────────────────────────
+  console.log("\n━━━ TAREFA 06: FACADE ━━━");
+
+  // O cliente chama apenas finalizar() — não conhece os subsistemas internos.
+  const checkout = new CheckoutFacade();
+  checkout.finalizar(pedido);
 
   await db.fechar();
 }
