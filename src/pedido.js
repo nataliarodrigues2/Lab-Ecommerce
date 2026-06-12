@@ -6,6 +6,10 @@
  * - Um Pedido tem muitos campos com regras de negócio (itens, endereço, pagamento).
  * - Construtor com vários parâmetros é confuso e frágil (erro de ordem).
  * - O Builder deixa a criação legível e validada em um único ponto (build()).
+ *
+ * TAREFA 08 — OBSERVER (Subject)
+ * O Pedido também atua como Subject: mantém uma lista de observers e os notifica
+ * ao mudar de status, sem conhecer o tipo concreto de cada observer.
  */
 
 // ─── Produto final ────────────────────────────────────────────────────────────
@@ -18,6 +22,23 @@ class Pedido {
     this.pagamento = pagamento;
     this.total = itens.reduce((acc, item) => acc + item.quantidade * item.precoUnitario, 0);
     this.criadoEm = new Date();
+    this.status = "CRIADO";
+    this._observers = [];
+  }
+
+  // ─── Observer (Subject) ──────────────────────────────────────────────────
+  adicionarObserver(observer) {
+    this._observers.push(observer);
+    return this;
+  }
+
+  setStatus(novoStatus) {
+    this.status = novoStatus;
+    this._notificar();
+  }
+
+  _notificar() {
+    this._observers.forEach((obs) => obs.atualizar(this));
   }
 
   exibir() {

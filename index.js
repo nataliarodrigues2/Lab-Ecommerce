@@ -5,6 +5,7 @@ const { GatewayAdapter } = require("./src/gatewayAdapter");
 const { LogDecorator, DescontoDecorator } = require("./src/decoratorPagamento");
 const { CheckoutFacade } = require("./src/checkoutFacade");
 const { Carrinho, FreteCorreios, FreteJadlog, FreteRetirada } = require("./src/frete");
+const { EmailObserver, EstoqueObserver, LogObserver } = require("./src/observers");
 
 async function main() {
   console.log("╔══════════════════════════════════════╗");
@@ -120,6 +121,18 @@ async function main() {
 
   carrinho.setFrete(new FreteRetirada());
   console.log(`Retirada:  R$ ${carrinho.calcularFrete(peso).toFixed(2)}`);
+
+  // ── OBSERVER ────────────────────────────────────────────────────────────────
+  console.log("\n━━━ TAREFA 08: OBSERVER ━━━");
+
+  // Registra os observers e dispara a notificação ao mudar o status.
+  pedido
+    .adicionarObserver(new EmailObserver())
+    .adicionarObserver(new EstoqueObserver())
+    .adicionarObserver(new LogObserver());
+
+  console.log(`Mudando status do pedido ${pedido.id} para CONFIRMADO...`);
+  pedido.setStatus("CONFIRMADO");
 
   await db.fechar();
 }
